@@ -1,0 +1,37 @@
+{
+  "entity.sniffer.ambient": {
+    "sounds": [
+      {
+        "name": "muffinsniffer:mob/sniffer/sniffer_idle1",
+        "volume": 0.5
+      },
+      {
+       "name": "muffinsniffer:mob/sniffer/sniffer_idle2",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.entity.sniffer.idle"
+  },
+  "entity.sniffer.death": {
+    "sounds": [
+      {
+      "name":"muffinsniffer:mob/sniffer/sniffer_death",
+      "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.entity.sniffer.death"
+  },
+  "entity.sniffer.hurt": {
+    "sounds": [
+      {
+        "name":"muffinsniffer:mob/sniffer/sniffer_hurt1",
+        "volume": 0.5
+      },
+      {
+        "name": "muffinsniffer:mob/sniffer/sniffer_hurt2",
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitles.entity.sniffer.hurt"
+  }
+}

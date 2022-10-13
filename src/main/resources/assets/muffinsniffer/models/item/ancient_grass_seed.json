@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "muffinsniffer:item/ancient_seed"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "muffinsniffer:block/ancient_grass_top"
+  }
+}

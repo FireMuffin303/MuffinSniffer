@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "muffinsniffer:block/ancient_grass_bottom"
+    },
+    "half=upper": {
+      "model": "muffinsniffer:block/ancient_grass_top"
+    }
+  }
+}

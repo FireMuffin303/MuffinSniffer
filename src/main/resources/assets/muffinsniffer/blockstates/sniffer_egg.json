@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "hatch=0": {
+      "model": "muffinsniffer:block/sniffer_egg"
+    },
+    "hatch=1": {
+      "model": "muffinsniffer:block/sniffer_egg_hatch_1"
+    },
+    "hatch=2": {
+      "model": "muffinsniffer:block/sniffer_egg_hatch_2"
+    }
+  }
+}

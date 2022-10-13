@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "muffinsniffer",
+  "version": "${version}",
+  "name": "Muffin's Sniffer",
+  "description": "Add Sniffer to Minecraft!",
+  "authors": [
+    "firemuffin303"
+  ],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/muffinsniffer"
+  },
+  "license": "MIT",
+  "icon": "assets/muffinsniffer/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "firemuffin303.muffinsniffer.client.MuffinSnifferClient"
+    ],
+    "main": [
+      "firemuffin303.muffinsniffer.MuffinSniffer"
+    ]
+  },
+  "mixins": [
+    "muffinsniffer.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}

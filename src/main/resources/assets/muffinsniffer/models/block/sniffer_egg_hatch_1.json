@@ -1,0 +1,6 @@
+{
+  "parent": "muffinsniffer:block/template_sniffer_egg",
+  "textures": {
+    "all": "muffinsniffer:block/sniffer_egg_hatch_1"
+  }
+}
