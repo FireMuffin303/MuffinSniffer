@@ -30,8 +30,11 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
 
 public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteerable {
     private static final TrackedData<BlockPos> SEED_POS;
@@ -58,6 +61,7 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
         this.goalSelector.add(3, new TemptGoal(this, 1.25D, Ingredient.ofItems(new ItemConvertible[]{Items.CARROT_ON_A_STICK}), false));
         this.goalSelector.add(3, new TemptGoal(this, 1.25D, BREEDING_INGREDIENT, false));
         this.goalSelector.add(4, new FollowParentGoal(this, 1.25D));
+        this.goalSelector.add(4, new WalkToDirt(this,1.15D));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -101,7 +105,6 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
         super.initDataTracker();
         this.dataTracker.startTracking(SADDLED, false);
         this.dataTracker.startTracking(BOOST_TIME, 0);
-        this.dataTracker.startTracking(SEED_POS,BlockPos.ORIGIN);
         this.dataTracker.startTracking(HAS_SEED,false);
         this.dataTracker.startTracking(SNIFFING,false);
     }
@@ -175,12 +178,6 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
                     this.setHasSeed(true);
                     itemStack.decrement(1);
                     this.world.playSoundFromEntity(null,this,SoundEvents.ENTITY_HORSE_EAT,SoundCategory.NEUTRAL,0.5F,1.0F);
-                    BlockPos blockPos = this.getBlockPos();
-                    /*int a = new Random().nextInt(2) == 1 ? -1 : 1;
-                    int r = 8;
-                    if(world instanceof ServerWorld serverWorld) {
-                        setSeedPos(serverWorld.getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos.add(serverWorld.getRandom().nextInt(r)*a, blockPos.getY(), serverWorld.getRandom().nextInt(r)*a)));
-                    }*/
                     return ActionResult.SUCCESS;
                 }
             } else {
@@ -203,10 +200,6 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
         return this.dataTracker.get(HAS_SEED);
     }
 
-    public void setSeedPos(BlockPos blockPos){
-        this.dataTracker.set(SEED_POS,blockPos);
-    }
-
     public void setSniffing(boolean sniffing){
         this.sniffingCounter = sniffing ? 1:0;
         this.dataTracker.set(SNIFFING,sniffing);
@@ -214,10 +207,6 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
 
     public boolean isSniffing(){
        return this.dataTracker.get(SNIFFING);
-    }
-
-    public BlockPos getSeedPos(){
-        return this.dataTracker.get(SEED_POS);
     }
 
     public Entity getPrimaryPassenger() {
@@ -335,6 +324,13 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
         }
 
         @Override
+        public void stop() {
+            super.stop();
+            this.snifferEntity.setHasSeed(false);
+            this.snifferEntity.preSniffingCounter = 0;
+        }
+
+        @Override
         public void start() {
             super.start();
             this.snifferEntity.world.sendEntityStatus(this.snifferEntity, (byte)10);
@@ -364,5 +360,45 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
             }
         }
 
+    }
+
+    static class WalkToDirt extends Goal{
+        private SnifferEntity snifferEntity;
+        protected double targetX;
+        protected double targetY;
+        protected double targetZ;
+        private double speed;
+        public WalkToDirt(SnifferEntity snifferEntity,Double speed){
+            this.snifferEntity = snifferEntity;
+            this.speed = speed;
+            this.setControls(EnumSet.of(Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            if(this.snifferEntity.preSniffingCounter > 0){
+                BlockPos blockPos = this.locateClosestDirt(16);
+                if(blockPos != null){
+                    this.targetX = blockPos.getX();
+                    this.targetY = blockPos.getY();
+                    this.targetZ = blockPos.getZ();
+                    return true;
+                }
+            }
+             return false;
+        }
+
+        @Override
+        public void start() {
+            this.snifferEntity.getNavigation().startMovingTo(this.targetX,this.targetY,this.targetZ,this.speed);
+        }
+
+        protected BlockPos locateClosestDirt(int rangeX){
+            BlockView world = this.snifferEntity.world;
+            BlockPos blockPos = this.snifferEntity.getBlockPos();
+            return !world.getBlockState(blockPos).getCollisionShape(world,blockPos).isEmpty() ? null : BlockPos.findClosest(this.snifferEntity.getBlockPos(),rangeX,1,(pos) -> {
+                return world.getBlockState(pos).isIn(BlockTags.DIRT);
+            }).orElse(null);
+        }
     }
 }

@@ -11,15 +11,12 @@ import net.minecraft.util.registry.Registry;
 
 public class ModEntities {
     public static final EntityType<SnifferEntity> SNIFFER;
-    public static final EntityType<SculkSnifferEntity> SCULK_SNIFFER;
 
     public static void init(){
         FabricDefaultAttributeRegistry.register(SNIFFER,SnifferEntity.createAttributes());
-        //FabricDefaultAttributeRegistry.register(SCULK_SNIFFER,SculkSnifferEntity.createAttributes());
     }
 
     static {
         SNIFFER = Registry.register(Registry.ENTITY_TYPE,new Identifier(MuffinSniffer.MODID,"sniffer"),FabricEntityTypeBuilder.create(SpawnGroup.CREATURE,SnifferEntity::new).dimensions(EntityDimensions.changing(1.5F,1.8F)).build());
-        SCULK_SNIFFER = Registry.register(Registry.ENTITY_TYPE, new Identifier(MuffinSniffer.MODID,"sculk_sniffer"),FabricEntityTypeBuilder.create(SpawnGroup.CREATURE,SculkSnifferEntity::new).dimensions(EntityDimensions.changing(1.5F,1.8F)).build());
     }
 }
