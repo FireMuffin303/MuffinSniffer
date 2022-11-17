@@ -3,11 +3,11 @@
     "sounds": [
       {
         "name": "muffinsniffer:mob/sniffer/sniffer_idle1",
-        "volume": 0.45
+        "volume": 0.3
       },
       {
        "name": "muffinsniffer:mob/sniffer/sniffer_idle2",
-        "volume": 0.45
+        "volume": 0.3
       }
     ],
     "subtitle": "subtitles.entity.sniffer.idle"

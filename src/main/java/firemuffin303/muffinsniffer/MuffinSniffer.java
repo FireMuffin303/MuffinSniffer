@@ -3,6 +3,7 @@ package firemuffin303.muffinsniffer;
 import firemuffin303.muffinsniffer.block.ModBlocks;
 import firemuffin303.muffinsniffer.entity.ModEntities;
 import firemuffin303.muffinsniffer.item.ModItems;
+import firemuffin303.muffinsniffer.loot.ModLootTables;
 import firemuffin303.muffinsniffer.sound.ModSoundEvents;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -28,6 +29,7 @@ public class MuffinSniffer implements ModInitializer {
         //ModItemTags.init();
         ModSoundEvents.init();
         ModEntities.init();
+        ModLootTables.init();
 
         LootTableEvents.MODIFY.register(((resourceManager, lootManager, id, tableBuilder, source) -> {
             if(source.isBuiltin() && (LootTables.UNDERWATER_RUIN_BIG_CHEST.equals(id) || LootTables.UNDERWATER_RUIN_SMALL_CHEST.equals(id))){
@@ -38,5 +40,7 @@ public class MuffinSniffer implements ModInitializer {
             tableBuilder.pool(poolBuilder);
             }
         }));
+
+
     }
 }
