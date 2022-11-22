@@ -2,6 +2,7 @@ package firemuffin303.muffinsniffer.entity;
 
 import com.google.common.collect.UnmodifiableIterator;
 import firemuffin303.muffinsniffer.item.ModItems;
+import firemuffin303.muffinsniffer.loot.ModLootTables;
 import firemuffin303.muffinsniffer.sound.ModSoundEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -20,6 +21,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.LootTables;
+import net.minecraft.loot.context.*;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -35,6 +39,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
 
 public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteerable {
     private static final TrackedData<BlockPos> SEED_POS;
@@ -328,6 +334,7 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
             super.stop();
             this.snifferEntity.setHasSeed(false);
             this.snifferEntity.preSniffingCounter = 0;
+            this.dropSeedGift();
         }
 
         @Override
@@ -346,9 +353,6 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
                     this.snifferEntity.setSniffing(true);
 
                 }else if(this.snifferEntity.sniffingCounter > this.getTickCount(200)){
-                    World world = this.snifferEntity.world;
-                    world.playSound(null,blockPos,SoundEvents.ENTITY_ITEM_PICKUP,SoundCategory.BLOCKS,0.3F,1.0F);
-                    this.snifferEntity.dropItem(ModItems.ANCIENT_SEED,1);
                     this.snifferEntity.setSniffing(false);
                     this.snifferEntity.setHasSeed(false);
                     //this.snifferEntity.setSeedPos(BlockPos.ORIGIN);
@@ -359,7 +363,21 @@ public class SnifferEntity extends AnimalEntity implements Saddleable, ItemSteer
                 }
             }
         }
+        private void dropSeedGift(){
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            mutable.set(this.snifferEntity.getBlockPos());
+            World world = this.snifferEntity.world;
+            world.playSound(null,this.snifferEntity.getBlockPos(),SoundEvents.ENTITY_ITEM_PICKUP,SoundCategory.BLOCKS,0.3F,1.0F);
+            LootTable lootTable = this.snifferEntity.world.getServer().getLootManager().getTable(ModLootTables.SNIFFER_SNIFFING_GIFT_GAMEPLAY);
+            LootContext.Builder builder = new LootContext.Builder((ServerWorld) this.snifferEntity.world).parameter(LootContextParameters.ORIGIN,this.snifferEntity.getPos()).parameter(LootContextParameters.THIS_ENTITY,this.snifferEntity).random(this.snifferEntity.world.random);
+            List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
+            Iterator iterator = list.iterator();
 
+            while(iterator.hasNext()){
+                ItemStack itemStack = (ItemStack) iterator.next();
+                this.snifferEntity.world.spawnEntity(new ItemEntity(this.snifferEntity.world, mutable.getX() - MathHelper.sin(this.snifferEntity.bodyYaw * 0.017453292F),mutable.getY(), mutable.getZ() + MathHelper.cos(this.snifferEntity.bodyYaw * 0.017453292F),itemStack));
+            }
+        }
     }
 
     static class WalkToDirt extends Goal{
